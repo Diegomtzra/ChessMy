@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrusel de Imágenes</title>
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+  <link rel="stylesheet" href="/componentes/Carrusel/Carrusel.css">
+</head>
+<body>
+  <div class="container-carrusel">
+    <div class="content-welcome">
+      <h1>Aprende ajedrez de la mano de tu maestro.</h1>
+      <p>
+        Accede a tableros interactivos, ejercicios y recursos personalizados para mejorar tu juego y disfrutar del aprendizaje.
+      </p>
+    </div>
+
+    <!-- Carrusel -->
+    <div class="swiper-container">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide"><img src="/componentes/Carrusel/assets/AlfilBla.png" alt="Rey Negro"></div>
+        <div class="swiper-slide"><img src="/componentes/Carrusel/assets/ReynaBla.png" alt="Reina Blanca"></div>
+        <div class="swiper-slide"><img src="/componentes/Carrusel/assets/TorreNeg.png" alt="Torre Negra"></div>
+        <div class="swiper-slide"><img src="/componentes/Carrusel/assets/PeonBla.png" alt="Peón Blanco"></div>
+        <div class="swiper-slide"><img src="/componentes/Carrusel/assets/AlfilNeg.png" alt="Alfil Negro"></div>
+        <div class="swiper-slide"><img src="/componentes/Carrusel/assets/CaballoBla.png" alt="Caballo Blanco"></div>
+        <div class="swiper-slide"><img src="/componentes/Carrusel/assets/ReyBla.png" alt="Rey Blanco"></div>
+        <div class="swiper-slide"><img src="/componentes/Carrusel/assets/ReynaNeg.png" alt="Reina Negra"></div>
+        <div class="swiper-slide"><img src="/componentes/Carrusel/assets/PeonNeg.png" alt="Peón Negro"></div>
+        <div class="swiper-slide"><img src="/componentes/Carrusel/assets/AlfilBla.png" alt="Alfil Blanco"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <script>
+    const swiper = new Swiper('.swiper-container', {
+        spaceBetween: 10,
+        slidesPerView: 1,
+        autoplay: {
+          delay: 1500,
+          disableOnInteraction: false,
+        },
+        loop: true, // Para que el carrusel sea continuo
+      });
+  </script>
+</body>
+</html>

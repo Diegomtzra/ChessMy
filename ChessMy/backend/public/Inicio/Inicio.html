@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página con Navbar y Carrusel</title>
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+  <link rel="stylesheet" href="Inicio.css" />
+</head>
+<body>
+  <div id="navbar-container"></div>
+  <div id="carrusel-container"></div>
+
+  
+
+  <div class="cuerpo">
+    <!-- Tarjetas dinámicas aquí -->
+  </div>
+
+  <div id="footer-container"></div>
+
+  <script>
+    // Función para obtener parámetros de la URL
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    // Obtener el idUsuario
+    const idUsuario = getQueryParam('idUsuario');
+
+    if (idUsuario) {
+      // Llamar a la API para obtener los cursos del usuario
+      fetch(`/api/admin/getCursoUsuario/${idUsuario}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data); // Verifica qué datos se reciben
+          if (data && data.Cursos && data.Cursos.length > 0) {
+            data.Cursos.forEach(curso => {
+              // Crear una tarjeta dinámica
+              const tarjeta = document.createElement('div');
+              tarjeta.classList.add('tarjeta');
+
+              // Contenido de la cabecera
+              const cabecera = document.createElement('div');
+              cabecera.classList.add('cabecera');
+
+              const linkCurso = document.createElement('a');
+              linkCurso.classList.add('parte1');
+              linkCurso.href = `/curso/detalles.html?idCurso=${curso.idCurso}`; // Link al curso (ajústalo según sea necesario)
+
+              const titulo = document.createElement('div');
+              titulo.classList.add('titulo');
+              titulo.textContent = curso.nombreCurso || 'Nombre no disponible';
+              titulo.style.color = "blue";
+              titulo.style.fontSize = "20px";
+              titulo.style.fontWeight = "bold";
+              titulo.style.textAlign = "center";
+
+              linkCurso.appendChild(titulo);
+              cabecera.appendChild(linkCurso);
+
+              const nombreMaestro = document.createElement('div');
+              nombreMaestro.classList.add('nombre');
+              nombreMaestro.textContent = curso.maestro || 'Maestro no asignado'; // Ajusta según los datos disponibles
+
+              cabecera.appendChild(nombreMaestro);
+              tarjeta.appendChild(cabecera);
+
+              // Contenido del medio
+              const medio = document.createElement('div');
+              medio.classList.add('medio');
+
+              const texto = document.createElement('div');
+              texto.classList.add('texto');
+
+              const entregaHoy = document.createElement('h2');
+              entregaHoy.textContent = 'Se entrega hoy'; // Texto estático o dinámico según los datos
+
+              const tareas = document.createElement('div');
+              tareas.classList.add('tareas');
+
+              const linkTarea = document.createElement('a');
+              linkTarea.classList.add('link');
+              linkTarea.href = '#'; // Link a la tarea (ajústalo según sea necesario)
+              linkTarea.textContent = curso.tarea || 'Sin tareas asignadas'; // Ajusta según los datos disponibles
+
+              tareas.appendChild(linkTarea);
+              texto.appendChild(entregaHoy);
+              texto.appendChild(tareas);
+              medio.appendChild(texto);
+              tarjeta.appendChild(medio);
+
+              // Contenido del pie
+              const pie = document.createElement('div');
+              pie.classList.add('pie');
+
+              const icon2 = document.createElement('span');
+              icon2.classList.add('icon2');
+              icon2.innerHTML = '<i class="far fa-folder fa-lg"></i>';
+
+              const icon1 = document.createElement('span');
+              icon1.classList.add('icon1');
+              icon1.innerHTML = '<i class="far fa-address-book fa-lg"></i>';
+
+              pie.appendChild(icon2);
+              pie.appendChild(icon1);
+              tarjeta.appendChild(pie);
+
+              // Añadir la tarjeta al contenedor principal
+              document.querySelector('.cuerpo').appendChild(tarjeta);
+            });
+          } else {
+            document.querySelector('.cuerpo').textContent = 'No estás inscrito en ningún curso.';
+          }
+        })
+        .catch(error => {
+          console.error('Error al cargar los cursos:', error);
+          document.querySelector('.cuerpo').textContent = 'Hubo un error al cargar los cursos.';
+        });
+    } else {
+      console.error('No se encontró el idUsuario en la URL');
+    }
+  </script>
+
+  <script>
+    // Cargar la barra de navegación
+    fetch('../componentes/Navbar/Navbar.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('navbar-container').innerHTML = data;
+
+      const joinClass = async (idUsuario, token) => {
+        try {
+          const response = await fetch('/api/admin/registerAlumnoToCurso', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              idUsuario,
+              cursoToken: token,
+            }),
+          });
+      
+          const result = await response.json();
+      
+          if (response.ok) {
+            document.getElementById('modal-message').style.color = 'green';
+            document.getElementById('modal-message').textContent = '¡Te has unido al curso exitosamente!';
+            document.getElementById('modal-message').style.display = 'block';
+      
+            // Recargar la página después de 2 segundos
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          } else {
+            throw new Error(result.message || 'Error al unirse al curso');
+          }
+        } catch (error) {
+          console.error(error);
+          document.getElementById('modal-message').style.color = 'red';
+          document.getElementById('modal-message').textContent = error.message;
+          document.getElementById('modal-message').style.display = 'block';
+        }
+      };
+
+      // Agregar eventos al modal
+      const openModalBtn = document.getElementById('open-modal');
+      const closeModalBtn = document.getElementById('close-modal');
+      const modal = document.getElementById('class-modal');
+
+      openModalBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.style.display = 'block';
+      });
+
+      closeModalBtn?.addEventListener('click', () => {
+        modal.style.display = 'none';
+        document.getElementById('modal-message').style.display = 'none';
+      });
+
+      window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+          document.getElementById('modal-message').style.display = 'none';
+        }
+      });
+
+      // Manejar la lógica de unirse al curso
+      const joinClassBtn = document.getElementById('join-class-btn');
+      joinClassBtn?.addEventListener('click', () => {
+        const token = document.getElementById('course-token').value;
+
+        if (!idUsuario) {
+          alert('No se pudo obtener el ID del usuario. Intenta recargar la página.');
+          return;
+        }
+
+        if (!token) {
+          alert('Por favor, introduce un código de clase.');
+          return;
+        }
+
+        joinClass(idUsuario, token);
+      });
+    })
+    .catch(error => console.error('Error al cargar el Navbar:', error));
+
+  </script>
+
+  <!-- Script para cargar el Carrusel -->
+  <script>
+    fetch('../componentes/Carrusel/Carrusel.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('carrusel-container').innerHTML = data;
+
+        // Una vez cargado el HTML, carga y ejecuta el script del carrusel
+        const script = document.createElement('script');
+        script.src = "https://unpkg.com/swiper/swiper-bundle.min.js";
+        script.onload = () => {
+          const swiperInit = document.createElement('script');
+          swiperInit.textContent = `
+            const swiper = new Swiper('.swiper-container', {
+              spaceBetween: 10,
+              slidesPerView: 1,
+              autoplay: {
+                delay: 1500,
+                disableOnInteraction: false,
+              },
+              loop: true, // Para que el carrusel sea continuo
+            });
+          `;
+          document.body.appendChild(swiperInit);
+        };
+        document.body.appendChild(script);
+      })
+      .catch(error => console.error('Error al cargar el Carrusel:', error));
+  </script>
+
+
+  <script>
+    // Cargar el footer
+    fetch('../componentes/Footer/Footer.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('footer-container').innerHTML = data;
+      })
+      .catch(error => console.error('Error al cargar el Footer:', error));
+  </script>
+</body>
+</html>

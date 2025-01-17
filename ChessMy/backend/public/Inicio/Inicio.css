@@ -1,0 +1,152 @@
+.cuerpo {
+    padding: 20px;
+    display: grid;
+    grid-gap: 30px; /* Espaciado entre tarjetas */
+    grid-template-columns: repeat(4, 300px); /* Predeterminado: 4 columnas */
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: start; /* Alinear al inicio verticalmente */
+    text-overflow: ellipsis;
+    margin: 0 auto; /* Asegurar que el contenedor esté centrado */
+}
+a{
+	
+	color: black;
+	font-size: 13px;
+	font-family: Roboto,Helvetica,Arial,sans-serif;
+	margin-top: 0px;
+	text-decoration: none;
+}
+.tarjeta{
+	width: 300px;
+	height: 294px;
+	background: white;
+	border-radius: 10px;
+	border-width: 1px solid;
+	border:1px solid #ccc;; 
+}
+
+
+
+.cabecera{
+     width: 300px;
+     height: 100px;
+ 
+    border-top-right-radius:10px;
+    border-top-left-radius:10px;
+    border-bottom:1px solid #ccc; 
+     cursor: pointer;  
+
+}
+
+.cabecera .parte1{
+	
+	margin: 0 -0.25rem;
+    padding: 0 0.25rem;
+    text-align: left;
+
+}
+
+
+
+.cabecera .parte1 .titulo{
+    width: 228px;
+    font-family: 'Google Sans',Roboto,Arial,sans-serif;
+    font-size: 1.375rem;
+    font-weight: 400;
+    line-height: 1.75rem;
+    color: #fff;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: block;
+    padding-left:  12px ;
+}
+
+.nombre{
+	width: 210px;
+    font-family: Roboto,Helvetica,Arial,sans-serif;
+	font-size: 13px;
+	
+	color: #fff;
+    display: block;
+    
+   
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: block;
+	padding-left:12px ;
+}
+
+
+.medio{
+ width: 300px;
+ height: 137px; 
+ border-bottom:1px solid #ccc;
+ 
+}
+.texto{
+	padding: 12px 16px 16px ;
+}
+.medio .texto .foto{
+	width: 75px;
+	height: 75px;
+	border-radius: 50%;
+    float: right;
+    height: 4.6875rem;
+    position: relative;
+    margin-top: -3.09375rem;
+    width: 4.6875rem;
+}
+
+.medio .texto h2{
+	margin-top: 0px;
+	font-size: 13px;
+	color:#566573 ;
+	font-family: Roboto,Helvetica,Arial,sans-serif;
+}
+
+.pie{
+ width: 300px;
+ height: 57px; 
+  border-bottom-right-radius:10px;
+ border-bottom-left-radius:10px;
+}
+.pie .icon1{
+	border-radius: 50%;
+    float: right;
+    width: 40px;
+    height: 40px;   
+    margin-top: 1.09375rem;     
+  
+}
+
+.pie .icon2{
+	border-radius: 50%;
+    
+    float: right;
+    width: 40px;
+    height: 40px;   
+    margin-top: 1.09375rem;  
+      
+}
+
+/* Para pantallas pequeñas */
+@media screen and (max-width: 768px) {
+    .cuerpo {
+        justify-content: center; /* Centrar horizontalmente */
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablets o dispositivos medianos */
+    }
+}
+
+/* Para pantallas pequeñas (celulares) */
+@media screen and (max-width: 480px) {
+    .cuerpo {
+        grid-template-columns: 1fr; /* 1 columna que ocupa todo el ancho */
+        justify-content: center; /* Centrar horizontalmente las tarjetas */
+        align-items: center; /* Centrar verticalmente las tarjetas */
+    }
+    .tarjeta {
+        margin: 0 auto; /* Centrar cada tarjeta individualmente */
+    }
+}

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD de Maestros</title>
+    <link rel="stylesheet" href="Maestros.css" />
+    <script
+      src="https://kit.fontawesome.com/91ede31488.js"
+      crossorigin="anonymous"
+    ></script>
+</head>
+<body>
+    <div id="navbaradm-container"></div>
+
+    <div class="content-maestros">
+        <div class="content-sidebar-izq">
+            <!-- Aquí puedes agregar un menú lateral si es necesario -->
+        </div>
+        <div class="content-crud">
+            <div class="header">
+                <h1>Lista de maestros</h1>
+                <div class="header-right">
+                    <button class="new-button" id="newMaestroBtn">Nuevo maestro</button>
+                </div>
+            </div>
+            <hr />
+            <p id="error-message" style="color: red; display: none;"></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Apellidos</th>
+                        <th>Correo</th>
+                        <th>Estado de cuenta</th>
+                        <th>Rol de usuario</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="maestrosTableBody">
+                    <!-- Filas dinámicas aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = "/api/admin/maestros"; // Para obtener la lista
+        const maestroApiUrl = "/api/admin/maestro"; // Para operaciones individuales
+        const maestrosTableBody = document.getElementById("maestrosTableBody");
+        const errorMessage = document.getElementById("error-message");
+        let newRowActive = false; // Controla si ya se está creando un nuevo maestro
+
+        // Obtener la lista de maestros del backend
+        async function fetchMaestros() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error("Error al obtener maestros");
+                const maestros = await response.json();
+                renderMaestros(maestros);
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        // Mostrar error
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = "block";
+        }
+
+        // Renderizar los maestros en la tabla
+        function renderMaestros(maestros) {
+            maestrosTableBody.innerHTML = ""; // Limpiar tabla
+            maestros.forEach(maestro => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${maestro.idUsuario}</td>
+                    <td>${maestro.nombres}</td>
+                    <td>${maestro.apellidos}</td>
+                    <td>${maestro.correoUsuario}</td>
+                    <td>${maestro.estadoCuenta}</td>
+                    <td>${maestro.rolUsuario}</td>
+                    <td class="actions">
+                        <button class="edit-button" onclick="startEditing(${maestro.idUsuario})"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button class="delete-button" onclick="deleteMaestro(${maestro.idUsuario})"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                maestrosTableBody.appendChild(row);
+            });
+        }
+
+        // Crear una nueva fila para el maestro
+        function createNewRow() {
+            if (newRowActive) return; // No permitir múltiples filas de creación
+            newRowActive = true;
+
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td>N/A</td>
+                <td><input type="text" placeholder="Nombre" /></td>
+                <td><input type="text" placeholder="Apellidos" /></td>
+                <td><input type="email" placeholder="Correo" /></td>
+                <td><input type="text" placeholder="Estado de cuenta" /></td>
+                <td>
+                    <select>
+                        <option value="alumno">Alumno</option>
+                        <option value="maestro">Maestro</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </td>
+                <td class="actions">
+                    <button class="save-button" onclick="saveNewRow(this)"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="cancel-button" onclick="cancelNewRow(this)"><i class="fa-solid fa-trash-can"></i></button>
+                </td>
+            `;
+            maestrosTableBody.appendChild(newRow);
+        }
+
+        // Guardar el nuevo maestro
+        async function saveNewRow(button) {
+            const row = button.closest("tr");
+            const inputs = row.querySelectorAll("input");
+            const select = row.querySelector("select");
+
+            const nuevoMaestro = {
+                nombres: inputs[0].value,
+                apellidos: inputs[1].value,
+                correoUsuario: inputs[2].value,
+                estadoCuenta: inputs[3].value,
+                rolUsuario: select.value,
+            };
+
+            try {
+                const response = await fetch(maestroApiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(nuevoMaestro),
+                });
+                if (!response.ok) throw new Error("Error al guardar el nuevo maestro");
+                await fetchMaestros(); // Actualizar la lista
+                newRowActive = false; // Permitir agregar otra fila
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        // Cancelar la creación de un nuevo maestro
+        function cancelNewRow(button) {
+            const row = button.closest("tr");
+            row.remove();
+            newRowActive = false; // Permitir agregar otra fila
+        }
+
+        // Iniciar edición de un maestro
+        function startEditing(id) {
+            const row = Array.from(maestrosTableBody.children).find(tr => tr.firstElementChild.textContent == id);
+            if (!row) return;
+
+            editingId = id;
+
+            const [idCell, nombreCell, apellidosCell, correoCell, estadoCell, rolCell, actionsCell] = row.children;
+
+            nombreCell.innerHTML = `<input type="text" value="${nombreCell.textContent}" />`;
+            apellidosCell.innerHTML = `<input type="text" value="${apellidosCell.textContent}" />`;
+            correoCell.innerHTML = `<input type="email" value="${correoCell.textContent}" />`;
+            estadoCell.innerHTML = `<input type="text" value="${estadoCell.textContent}" />`;
+            rolCell.innerHTML = `
+                <select>
+                    <option value="alumno" ${rolCell.textContent === "alumno" ? "selected" : ""}>Alumno</option>
+                    <option value="maestro" ${rolCell.textContent === "maestro" ? "selected" : ""}>Maestro</option>
+                    <option value="admin" ${rolCell.textContent === "admin" ? "selected" : ""}>Admin</option>
+                </select>
+            `;
+
+            actionsCell.innerHTML = `
+                <button class="save-button" onclick="saveChanges(${id})"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="cancel-button" onclick="cancelEditing()"><i class="fa-solid fa-trash-can"></i></button>
+            `;
+        }
+
+        // Guardar cambios de un maestro
+        async function saveChanges(id) {
+            const row = Array.from(maestrosTableBody.children).find(tr => tr.firstElementChild.textContent == id);
+            if (!row) return;
+
+            const [idCell, nombreCell, apellidosCell, correoCell, estadoCell, rolCell] = row.children;
+
+            const updatedMaestro = {
+                nombres: nombreCell.firstElementChild.value,
+                apellidos: apellidosCell.firstElementChild.value,
+                correoUsuario: correoCell.firstElementChild.value,
+                estadoCuenta: estadoCell.firstElementChild.value,
+                rolUsuario: rolCell.firstElementChild.value,
+            };
+
+            try {
+                const response = await fetch(`${maestroApiUrl}/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(updatedMaestro),
+                });
+                if (!response.ok) throw new Error("Error al guardar los cambios");
+                await fetchMaestros(); // Actualizar la lista
+                editingId = null;
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        // Cancelar edición
+        function cancelEditing() {
+            editingId = null;
+            fetchMaestros(); // Volver a cargar la lista
+        }
+
+        // Eliminar maestro
+        async function deleteMaestro(id) {
+            if (!confirm("¿Seguro que deseas eliminar este maestro?")) return;
+
+            try {
+                const response = await fetch(`${maestroApiUrl}/${id}`, { method: "DELETE" });
+                if (!response.ok) throw new Error("Error al eliminar maestro");
+
+                const rowToDelete = document.querySelector(`button.delete-button[onclick="deleteMaestro(${id})"]`).closest("tr");
+                if (rowToDelete) rowToDelete.remove();
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        // Manejar el botón "Nuevo maestro"
+        document.getElementById("newMaestroBtn").addEventListener("click", createNewRow);
+
+        // Inicializar la lista de maestros
+        fetchMaestros();
+    </script> 
+    
+    <!-- Script para cargar el Footer -->
+  <script>
+    fetch('../componentes/NavbarAdm/NavbarAdm.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('navbaradm-container').innerHTML = data;
+      })
+      .catch(error => console.error('Error al cargar el Navbar:', error));
+  </script>
+</body>
+</html>

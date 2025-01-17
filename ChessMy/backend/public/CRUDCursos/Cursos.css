@@ -1,0 +1,289 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background: #C0C0C0;
+}
+.content-cursos {
+    display: flex;
+}
+.content-sidebar-izq {
+    flex: 0;
+}
+.content-crud {
+    margin: 80px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+.content-crud .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.content-crud .header h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.content-crud .header .header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.content-crud .header .search-bar {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.content-crud .header .search-bar input {
+    padding: 8px 30px 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.content-crud .header .search-bar .search-icon {
+    position: absolute;
+    right: 10px;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.content-crud .header .notification-icon {
+    font-size: 1.5rem;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.content-crud .header .notification-icon:hover {
+    color: #333;
+}
+
+.content-crud .header .new-button {
+    background-color: #171717;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    
+}
+
+.content-crud .header .new-button:hover {
+    background-color: #2D2D2D;
+}
+.header h1{
+    background: #f9f9f9;
+}
+.header{
+    background: #f9f9f9;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table thead {
+    background-color: #171717;
+}
+
+table thead th {
+    font-weight: 600;
+    color: #fff;
+    padding: 15px;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+table tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+table tbody td {
+    padding: 15px;
+    font-size: 0.9rem;
+    color: #333;
+    background: #f9f9f9;
+
+}
+
+table tbody td:last-child {
+    display: flex;
+    gap: 10px;
+}
+
+table .actions {
+    display: flex;
+    gap: 10px;
+}
+
+table .actions .edit-button,
+table .actions .delete-button,
+table .actions .show-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: 8px;
+    transition: color 0.2s;
+}
+
+table .actions .edit-button {
+    color: #171717;
+}
+
+table .actions .edit-button:hover {
+    color: #2D2D2D;
+}
+
+table .actions .delete-button {
+    color: #e74c3c;
+}
+
+table .actions .delete-button:hover {
+    color: #cf3f32;
+}
+
+.save-button{
+    background-color: #171717;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.cancel-button{
+    background-color: #666;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.input-rol, .input-estado, .input-correo-email, .input-apellidos-input, .input-nombre-input{
+    border-radius: 10px;
+    text-align: start;
+    padding: 5px 10px;
+    border: 2px solid #666;
+    background: transparent;
+}
+
+.fa-solid{
+    color: #171717;
+    background: #f9f9f9;
+}
+
+.back-button {
+    background-color: #171717; /* Color de fondo */
+    color: white; /* Color del texto */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 10px 20px; /* Espaciado interno */
+    font-size: 16px; /* Tamaño del texto */
+    cursor: pointer; /* Cambiar cursor a "pointer" */
+    margin-top: 20px; /* Margen superior */
+    transition: background-color 0.3s ease; /* Transición suave */
+}
+
+.back-button:hover {
+    background-color: #2D2D2D; /* Cambiar color al pasar el ratón */
+}
+
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .content-crud {
+        padding: 15px;
+    }
+
+    .content-crud .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .content-crud .header h1 {
+        font-size: 1.3rem;
+    }
+
+    .content-crud .header .new-button {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+
+    table thead {
+        display: none;
+    }
+
+    table tbody tr {
+        display: flex;
+        flex-direction: column;
+        padding: 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    table tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 0.9rem;
+    }
+
+    table tbody td:last-child {
+        justify-content: flex-start;
+        gap: 10px;
+        padding-top: 10px;
+    }
+
+    table tbody td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #666;
+        margin-right: 5px;
+    }
+}
+
+/* Pequeñas pantallas */
+@media (max-width: 576px) {
+    .content-crud {
+        margin: 80px 20px;
+        padding: 10px;
+    }
+
+    .content-crud .header h1 {
+        font-size: 1.1rem;
+    }
+
+    .content-crud .header .new-button {
+        width: 100%;
+        text-align: center;
+        padding: 8px;
+    }
+
+    table tbody tr {
+        margin-bottom: 8px;
+    }
+}

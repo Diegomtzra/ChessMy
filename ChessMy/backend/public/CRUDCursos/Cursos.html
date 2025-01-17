@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página con Navbar y Carrusel</title>
+  <link rel="stylesheet" href="Cursos.css" />
+  <script src="https://kit.fontawesome.com/91ede31488.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="navbaradm-container"></div>
+
+  <div class="content-cursos">
+    <div class="content-sidebar-izq"></div>
+    <div class="content-crud">
+      <div class="header">
+        <h1>Lista de Cursos</h1>
+        <button class="new-button" id="newCursoBtn">Nuevo curso</button>
+      </div>
+      <hr />
+      <p id="error-message" style="color: red; display: none;"></p>
+      <table>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Descripcion</th>
+            
+            <th>Token Llamada</th>
+            <th>Token Curso</th>
+            <th>Acciones</th>
+            
+          </tr>
+        </thead>
+        <tbody id="cursosTableBody">
+          <!-- Filas dinámicas aquí -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const cursosTableBody = document.getElementById("cursosTableBody");
+    const newCursoBtn = document.getElementById("newCursoBtn");
+
+    // Función para obtener los cursos
+    async function fetchCursos() {
+        try {
+        const response = await fetch("/api/admin/getAllCursos");
+        if (!response.ok) {
+            throw new Error("Error al obtener los cursos");
+        }
+        const cursos = await response.json();
+        populateCursosTable(cursos);
+        } catch (error) {
+        console.error("Error:", error);
+        document.getElementById("error-message").style.display = "block";
+        document.getElementById("error-message").textContent =
+            "No se pudieron cargar los cursos.";
+        }
+    }
+    
+    // Función para llenar la tabla con los cursos
+    function populateCursosTable(cursos) {
+        // Mostrar el botón "Nuevo Curso" y ocultar el de "Regresar a los cursos"
+        document.getElementById("newCursoBtn").style.display = "inline-block";
+        const backButton = document.querySelector(".back-button");
+        if (backButton) backButton.remove();
+    
+        // Cambiar el encabezado
+        document.querySelector(".header h1").textContent = "Lista de Cursos";
+    
+        cursosTableBody.innerHTML = ""; // Limpiar tabla
+        cursos.forEach((curso) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${curso.idCurso}</td>
+            <td>${curso.nombreCurso}</td>
+            <td>${curso.descripcion}</td>
+            <td>${curso.idLlamada}</td>
+            <td>${curso.cursoToken}</td>
+            <td class="actions">
+                <button class="show-button" data-id="${curso.idCurso}">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </td>
+        `;
+        cursosTableBody.appendChild(row);
+        });
+    
+        // Asignar eventos a los botones "show-button"
+        const showButtons = document.querySelectorAll(".show-button");
+        showButtons.forEach((button) => {
+        button.addEventListener("click", async (event) => {
+            const cursoId = event.target.closest("button").dataset.id;
+            await fetchCursoYUsuarios(cursoId);
+        });
+        });
+    }
+    
+    // Función para obtener un curso y sus usuarios
+    async function fetchCursoYUsuarios(cursoId) {
+        try {
+        const response = await fetch(`/api/admin/cursos/${cursoId}/usuarios`);
+        if (!response.ok) {
+            throw new Error("Error al obtener los datos del curso");
+        }
+    
+        // Obtener el curso con usuarios
+        const cursoConUsuarios = await response.json();
+    
+        // Verificar que exista el campo Usuarios
+        if (!cursoConUsuarios.Usuarios || !Array.isArray(cursoConUsuarios.Usuarios)) {
+            throw new Error("La respuesta no contiene usuarios válidos.");
+        }
+    
+        // Mostrar la tabla del curso y de los usuarios
+        populateCursoYUsuariosTable(cursoConUsuarios);
+        } catch (error) {
+        console.error("Error:", error);
+        alert("No se pudieron cargar los datos del curso.");
+        }
+    }
+    
+    // Función para llenar las tablas con los datos del curso y los usuarios
+    function populateCursoYUsuariosTable(cursoConUsuarios) {
+        // Cambiar el encabezado
+        document.querySelector(".header h1").textContent = `Detalles del Curso: ${cursoConUsuarios.nombreCurso}`;
+    
+        // Ocultar el botón "Nuevo Curso"
+        document.getElementById("newCursoBtn").style.display = "none";
+    
+        // Mostrar los detalles del curso
+        cursosTableBody.innerHTML = `
+        <tbody>
+            <tr>
+                <td>${cursoConUsuarios.idCurso}</td>
+                <td>${cursoConUsuarios.nombreCurso}</td>
+                <td>${cursoConUsuarios.descripcion}</td>
+                <td>${cursoConUsuarios.idLlamada}</td>
+                <td>${cursoConUsuarios.cursoToken}</td>
+            </tr>
+        </tbody>
+        <thead>
+            <tr style="background-color: #171717; color: white;">
+                <th colspan="6">Usuarios Inscritos</th>
+            </tr>
+            <tr style=" background-color: #171717; color: white;">
+                <th></th>
+                <th>ID Usuario</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Rol de Alumno</th>
+                <th>Correo</th>
+            </tr>
+        </thead>
+        `;
+    
+        // Agregar la lista de usuarios inscritos
+        cursoConUsuarios.Usuarios.forEach((usuario) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td></td>
+            <td style="text-align: center;">${usuario.idUsuario}</td>
+            <td style="text-align: center;">${usuario.nombres}</td>
+            <td style="text-align: center;">${usuario.apellidos}</td>
+            <td style="text-align: center;">${usuario.rolUsuario}</td>
+            <td style="text-align: center;">${usuario.correoUsuario}</td>
+
+        `;
+        cursosTableBody.appendChild(row);
+        });
+    
+        // Agregar un botón para regresar a la tabla de cursos si no existe
+        if (!document.querySelector(".back-button")) {
+        const backButton = document.createElement("button");
+        backButton.textContent = "Regresar a los cursos";
+        backButton.className = "back-button";
+        backButton.addEventListener("click", fetchCursos);
+        document.querySelector(".header").appendChild(backButton);
+        }
+    }
+    
+    
+
+    // Agregar una fila editable para un nuevo curso
+    newCursoBtn.addEventListener("click", () => {
+      const newRow = document.createElement("tr");
+      newRow.innerHTML = `
+        <td>N/A</td>
+        <td><input type="text" placeholder="Nombre del curso" id="newNombreCurso"></td>
+        <td><input type="text" placeholder="Descripción" id="newDescripcionCurso"></td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td><button id="saveCursoBtn">Guardar</button></td>
+      `;
+      cursosTableBody.appendChild(newRow);
+
+      // Agregar evento al botón de guardar
+      const saveCursoBtn = document.getElementById("saveCursoBtn");
+      saveCursoBtn.addEventListener("click", async () => {
+        const nombreCurso = document.getElementById("newNombreCurso").value;
+        const descripcionCurso =
+          document.getElementById("newDescripcionCurso").value;
+
+        if (!nombreCurso || !descripcionCurso) {
+          alert("Por favor, completa todos los campos.");
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/admin/createCurso", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              nombreCurso,
+              descripcion: descripcionCurso,
+            }),
+          });
+
+          
+          fetchCursos(); // Actualizar la lista de cursos
+        } catch (error) {
+          console.error("Error:", error);
+          alert("No se pudo crear el curso. Intente nuevamente.");
+        }
+      });
+
+      // Deshabilitar el botón "Nuevo curso" mientras se edita
+      newCursoBtn.disabled = true;
+
+      // Reactivar el botón después de guardar
+      saveCursoBtn.addEventListener("click", () => {
+        newCursoBtn.disabled = false;
+      });
+    });
+
+    // Cargar los cursos al cargar la página
+    document.addEventListener("DOMContentLoaded", fetchCursos);
+  </script>
+
+  <!-- Script para cargar el NavbarAdm -->
+  <script>
+    fetch('../componentes/NavbarAdm/NavbarAdm.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('navbaradm-container').innerHTML = data;
+      })
+      .catch(error => console.error('Error al cargar el Navbar:', error));
+  </script>
+
+</body>
+</html>
